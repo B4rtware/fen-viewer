@@ -1,4 +1,4 @@
-###FenViewer illustrates a given fen string on a board
+### FenViewer illustrates a given fen string on a board
 
 ### Installation
 works with python3.6 and probably every python3.x version.
