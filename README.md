@@ -1,5 +1,7 @@
 ### FenViewer illustrates a given fen string on a board
 
+![fen viewer image](fen_viewer.png)
+
 ### Installation
 works with python3.6 and probably every python3.x version.
 - The only dependency is PyQt5. Install it via `pip3 install PyQt5` or using your prefered pip version
