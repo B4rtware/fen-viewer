@@ -1,3 +1,4 @@
+
 import sys
 
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel
@@ -70,7 +71,7 @@ class FenViewer(QWidget, Ui_FenViewer):
                 self.board_colors[x][y] = self.figure_color[char]
 
     def update_fields_from_moves(self):
-        print(self.current_moves_to_display)
+        #print(self.current_moves_to_display)
         for move in self.current_moves_to_display:
             coord = self._get_coordinates(move)
             from_ = coord[0]
@@ -163,7 +164,7 @@ class FenViewer(QWidget, Ui_FenViewer):
         if is_correct:
             self.ui_update_next_move()
             self.all_moves = move_string[1:-1].split(",")
-            print(self.all_moves)
+            #print(self.all_moves)
         else:
             self.ui_next_move_not_valid()
 
