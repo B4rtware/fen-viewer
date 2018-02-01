@@ -62,6 +62,7 @@ class FenViewer(QWidget, Ui_FenViewer):
                 l.setText(string.ascii_lowercase[x] + str(9 - y))
                 l.setFixedHeight(60)
                 l.setFixedWidth(60)
+                l.setWordWrap(True)
                 l.setStyleSheet(
                     "border: 1px solid black; qproperty-alignment: AlignCenter; background-color: {0}".format(
                         self.board_colors[x][y]))
@@ -78,9 +79,9 @@ class FenViewer(QWidget, Ui_FenViewer):
             if move:
                 coord = self._get_coordinates(move)
                 to = coord[1]
+                from_ = coord[0]
 
                 color = self.board_colors[to[0]][to[1]]
-
                 self.board_move_colors[to[0]][to[1]] = self.MOVETO if color == self.NEUTRAL else self.MOVEHIT
 
     def flush_fields_from_moves(self):
@@ -126,6 +127,23 @@ class FenViewer(QWidget, Ui_FenViewer):
     def ui_was_wrong_move(self):
         self.le_move_string.setStyleSheet("border: 1px solid red;")
 
+    def ui_update_moves_on_board(self):
+        if self.all_moves:
+            for move in self.all_moves:
+                if move:
+                    if self.cb_show_all_moves.isChecked():
+                        coord = self._get_coordinates(move)
+                        to = coord[1]
+                        from_ = coord[0]
+                        l = self.board[to[0]][to[1]]
+                        l.setText(l.text() + " " + move[:2])
+
+    def ui_flush_labels_to_default(self):
+        for y in range(self.BOARD_HEIGHT):
+            for x in range(self.BOARD_WIDTH):
+                l = self.board[x][y]
+                l.setText(self._coord_to_string(x, y))
+
     def ui_update_labels(self):
         for y in range(self.BOARD_HEIGHT):
             for x in range(self.BOARD_WIDTH):
@@ -152,6 +170,7 @@ class FenViewer(QWidget, Ui_FenViewer):
 
         if self.cb_show_all_moves.isChecked():
             self.ui_update_move_labels()
+            self.ui_update_moves_on_board()
 
     # Signal Functions
     def on_le_fen_string_edited(self, fen_string):
@@ -168,6 +187,7 @@ class FenViewer(QWidget, Ui_FenViewer):
     def on_le_move_string_edited(self, move_string):
         is_correct = self.isMoves(move_string)
         if is_correct:
+            self.ui_flush_labels_to_default()
             self.flush_fields_from_moves()
             self.all_moves = []
             self.all_moves = move_string[1:-1].split(",")
@@ -175,6 +195,7 @@ class FenViewer(QWidget, Ui_FenViewer):
             self.ui_update_all()
             self.ui_was_correct_move()
         else:
+            self.ui_flush_labels_to_default()
             self.flush_fields_from_moves()
             self.ui_update_all()
             self.ui_was_wrong_move()
@@ -188,6 +209,8 @@ class FenViewer(QWidget, Ui_FenViewer):
         if self.all_moves:
             #self.flush_fields_from_moves()
             self.ui_update_all()
+        if not checked:
+            self.ui_flush_labels_to_default()
 
 
 
@@ -195,6 +218,9 @@ class FenViewer(QWidget, Ui_FenViewer):
 # Helpers
     def _get_coordinates(self, move):
         return [(ord(move[0]) - 97, 9 - int(move[1])), (ord(move[3]) - 97, 9 - int(move[4]))]
+
+    def _coord_to_string(self, x, y):
+        return "{}{}".format(chr(x + 97), 9 - y)
 
 
 if __name__ == '__main__':
