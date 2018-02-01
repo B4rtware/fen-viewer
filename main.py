@@ -16,7 +16,8 @@ class FenViewer(QWidget, Ui_FenViewer):
     BLACKTOWN = "#000000"
     NEUTRAL = "#309070"
 
-    MOVETO = "#401010"
+    MOVETO = "#406030"
+    MOVEHIT = "#933010"
     MOVEFROM = "#104010"
 
     def __init__(self):
@@ -38,6 +39,8 @@ class FenViewer(QWidget, Ui_FenViewer):
         # Connect Signals
         self.le_fen_string.textEdited.connect(self.on_le_fen_string_edited)
         self.le_move_string.textEdited.connect(self.on_le_move_string_edited)
+        self.cb_show_all_moves.stateChanged.connect(self.on_cb_show_all_moves)
+        self.pb_insert_default_board.pressed.connect(self.on_pb_insert_initial_board)
 
         self.setup_matrices()
         self.setup_board_labels()
@@ -50,7 +53,7 @@ class FenViewer(QWidget, Ui_FenViewer):
             for x in range(self.BOARD_WIDTH):
                 self.board[y].append(None)
                 self.board_colors[y].append(self.NEUTRAL)
-                self.board_move_colors[y].append(self.NEUTRAL)
+                self.board_move_colors[y].append(None)
 
     def setup_board_labels(self):
         for y in range(self.BOARD_HEIGHT):
@@ -71,14 +74,19 @@ class FenViewer(QWidget, Ui_FenViewer):
                 self.board_colors[x][y] = self.figure_color[char]
 
     def update_fields_from_moves(self):
-        #print(self.current_moves_to_display)
-        for move in self.current_moves_to_display:
-            coord = self._get_coordinates(move)
-            from_ = coord[0]
-            to_ = coord[1]
+        for move in self.all_moves:
+            if move:
+                coord = self._get_coordinates(move)
+                to = coord[1]
 
-            self.board_move_colors[from_[0]][from_[1]] = self.MOVEFROM
-            self.board_move_colors[to_[0]][to_[1]] = self.MOVETO
+                color = self.board_colors[to[0]][to[1]]
+
+                self.board_move_colors[to[0]][to[1]] = self.MOVETO if color == self.NEUTRAL else self.MOVEHIT
+
+    def flush_fields_from_moves(self):
+        for y in range(self.BOARD_HEIGHT):
+            for x in range(self.BOARD_WIDTH):
+                self.board_move_colors[x][y] = None
 
 # Parser
     def isFEN(self, fen_string):
@@ -112,29 +120,25 @@ class FenViewer(QWidget, Ui_FenViewer):
     def ui_was_wrong_fen(self):
         self.le_fen_string.setStyleSheet("border: 1px solid red;")
 
+    def ui_was_correct_move(self):
+        self.le_move_string.setStyleSheet("border: 1px solid green;")
+
+    def ui_was_wrong_move(self):
+        self.le_move_string.setStyleSheet("border: 1px solid red;")
+
     def ui_update_labels(self):
         for y in range(self.BOARD_HEIGHT):
             for x in range(self.BOARD_WIDTH):
                 label = self.board[x][y]
                 label.setStyleSheet("border: 1px solid black; background-color: {0}".format(self.board_colors[x][y]))
 
-    def ui_update_next_move(self):
-        if not len(self.all_moves) > 0:
-            self.l_next_move.setText("Empty")
-        else:
-            self.l_next_move.setText(self.all_moves[0])
-
-    def ui_next_move_not_valid(self):
-        self.l_next_move.setText("Not Valid")
-
-    def ui_next_move_deactivated(self):
-        self.l_next_move.setText("X")
-
     def ui_update_move_labels(self):
         for y in range(self.BOARD_HEIGHT):
             for x in range(self.BOARD_WIDTH):
                 label = self.board[x][y]
-                label.setStyleSheet("border: 1px solid black; background-color: {0}".format(self.board_move_colors[x][y]))
+                color = self.board_move_colors[x][y]
+                if color:
+                    label.setStyleSheet("border: 1px solid black; background-color: {0}".format(color))
 
     def ui_clear_labels(self):
         for y in range(self.BOARD_HEIGHT):
@@ -144,10 +148,10 @@ class FenViewer(QWidget, Ui_FenViewer):
                     "border: 1px solid black; background-color: {0}".format(self.NEUTRAL))
 
     def ui_update_all(self):
-        self.ui_clear_labels()
         self.ui_update_labels()
-        self.ui_update_move_labels()
 
+        if self.cb_show_all_moves.isChecked():
+            self.ui_update_move_labels()
 
     # Signal Functions
     def on_le_fen_string_edited(self, fen_string):
@@ -155,28 +159,37 @@ class FenViewer(QWidget, Ui_FenViewer):
         if is_correct:
             self.ui_was_correct_fen()
             self.update_fields_from_fen(pre_parsed_fen)
-            self.ui_update_labels()
+            if self.cb_show_all_moves.isChecked() and self.all_moves:
+                self.update_fields_from_moves()
+            self.ui_update_all()
         else:
             self.ui_was_wrong_fen()
 
     def on_le_move_string_edited(self, move_string):
         is_correct = self.isMoves(move_string)
         if is_correct:
-            self.ui_update_next_move()
+            self.flush_fields_from_moves()
+            self.all_moves = []
             self.all_moves = move_string[1:-1].split(",")
-            #print(self.all_moves)
-        else:
-            self.ui_next_move_not_valid()
-
-    def on_pb_next_move_pressed(self):
-        if len(self.all_moves) > 0:
-            next_move = self.all_moves.pop(0)
-            self.current_moves_to_display.append(next_move)
-
             self.update_fields_from_moves()
-            #self.ui_update_move_labels()
             self.ui_update_all()
-            self.current_moves_to_display = []
+            self.ui_was_correct_move()
+        else:
+            self.flush_fields_from_moves()
+            self.ui_update_all()
+            self.ui_was_wrong_move()
+
+    def on_pb_insert_initial_board(self):
+        default_fen = "/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/"
+        self.le_fen_string.setText(default_fen)
+        self.on_le_fen_string_edited(default_fen)
+
+    def on_cb_show_all_moves(self, checked):
+        if self.all_moves:
+            #self.flush_fields_from_moves()
+            self.ui_update_all()
+
+
 
 
 # Helpers

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'fen_viewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -46,15 +46,9 @@ class Ui_FenViewer(object):
         self.horizontalLayout.addWidget(self.cb_show_all_moves)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.l_next_move_string = QtWidgets.QLabel(self.widget)
-        self.l_next_move_string.setObjectName("l_next_move_string")
-        self.horizontalLayout.addWidget(self.l_next_move_string)
-        self.l_next_move = QtWidgets.QLabel(self.widget)
-        self.l_next_move.setObjectName("l_next_move")
-        self.horizontalLayout.addWidget(self.l_next_move)
-        self.pb_next_move = QtWidgets.QPushButton(self.widget)
-        self.pb_next_move.setObjectName("pb_next_move")
-        self.horizontalLayout.addWidget(self.pb_next_move)
+        self.pb_insert_default_board = QtWidgets.QPushButton(self.widget)
+        self.pb_insert_default_board.setObjectName("pb_insert_default_board")
+        self.horizontalLayout.addWidget(self.pb_insert_default_board)
         self.verticalLayout.addWidget(self.widget)
 
         self.retranslateUi(FenViewer)
@@ -65,8 +59,6 @@ class Ui_FenViewer(object):
         FenViewer.setWindowTitle(_translate("FenViewer", "FEN Viewer"))
         self.le_fen_string.setPlaceholderText(_translate("FenViewer", "FEN String"))
         self.le_move_string.setPlaceholderText(_translate("FenViewer", "Move String"))
-        self.cb_show_all_moves.setText(_translate("FenViewer", "show all moves"))
-        self.l_next_move_string.setText(_translate("FenViewer", "Next Move: "))
-        self.l_next_move.setText(_translate("FenViewer", "None"))
-        self.pb_next_move.setText(_translate("FenViewer", "Next Move"))
+        self.cb_show_all_moves.setText(_translate("FenViewer", "show moves"))
+        self.pb_insert_default_board.setText(_translate("FenViewer", "insert initial board"))
 

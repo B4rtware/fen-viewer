@@ -86,23 +86,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="l_next_move_string">
+       <widget class="QPushButton" name="pb_insert_default_board">
         <property name="text">
-         <string>Next Move: </string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="l_next_move">
-        <property name="text">
-         <string>None</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pb_next_move">
-        <property name="text">
-         <string>Next Move</string>
+         <string>insert initial board</string>
         </property>
        </widget>
       </item>
