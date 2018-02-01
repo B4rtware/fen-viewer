@@ -136,7 +136,7 @@ class FenViewer(QWidget, Ui_FenViewer):
                         to = coord[1]
                         from_ = coord[0]
                         l = self.board[to[0]][to[1]]
-                        l.setText(l.text() + " " + move[:2])
+                        l.setText("<b>" + l.text()[:2] + "</b>" + l.text()[3:] + " " + move[:2])
 
     def ui_flush_labels_to_default(self):
         for y in range(self.BOARD_HEIGHT):
@@ -177,6 +177,7 @@ class FenViewer(QWidget, Ui_FenViewer):
         is_correct, pre_parsed_fen = self.isFEN(fen_string)
         if is_correct:
             self.ui_was_correct_fen()
+            self.ui_flush_labels_to_default()
             self.update_fields_from_fen(pre_parsed_fen)
             if self.cb_show_all_moves.isChecked() and self.all_moves:
                 self.update_fields_from_moves()
@@ -195,9 +196,9 @@ class FenViewer(QWidget, Ui_FenViewer):
             self.ui_update_all()
             self.ui_was_correct_move()
         else:
-            self.ui_flush_labels_to_default()
             self.flush_fields_from_moves()
             self.ui_update_all()
+            self.ui_flush_labels_to_default()
             self.ui_was_wrong_move()
 
     def on_pb_insert_initial_board(self):
