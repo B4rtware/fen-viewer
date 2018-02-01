@@ -1,6 +1,6 @@
 ### FenViewer illustrates a given fen string on a board
 **This tool does not check for a correct move. It just displays your entered move string...**
-
+The **bold** labels are the actual fields. Next to them are the fields from which the figure is coming from.
 Colors:
 - orange/red indicates a hit (any hit from b **OR** w)
 - light green is the board color
